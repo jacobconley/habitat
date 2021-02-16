@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail 
+set +H
+
+GOPATH="${GOPATH:-$HOME/go}"
+cd $GOPATH/src/github.com/jacobconley/habitat
+
+
+
+SRV=localhost:3000
+cd test-fixture
+
+
+echo "test-e2e: Building test fixture"
+go build main.go 
+
+
+echo "test-e2e: starting server"
+HABITAT_ENV=test
+./main > /dev/null &
+SRV_PID=$!
+
+
+# Wait for it to be ready 
+while true 
+do
+    sleep 0.5
+    if curl --silent $SRV > /dev/null; then 
+        echo "test-e2e: connected"
+        break
+    else 
+        echo "x - retrying"
+        sleep 1
+    fi
+done
+
+
+
+ 
+echo "test-e2e: starting tests"
+if 
+    go clean -testcache
+    go test ../test/e2e/* 
+then 
+    TESTFAIL=0
+    echo "test-e2e: All tests passed"
+else 
+    TESTFAIL=1 
+    echo "test-e2e: Tests failed"
+fi 
+
+
+echo "test-e2e: Stopping server"
+kill $SRV_PID
+
+
+if [ $TESTFAIL == 1 ]; then exit 1; fi 

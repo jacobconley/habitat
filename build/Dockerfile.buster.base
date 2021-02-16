@@ -1,0 +1,31 @@
+FROM golang:1.15.8-buster
+
+# This image is used both as a build container and as a base image for our releases;
+#   we can probably improve that 
+
+WORKDIR /go/src/github.com/jacobconley/habitat
+
+
+# Golang dependencies
+COPY go.mod go.sum ./ 
+RUN go mod download
+
+ 
+# ======================
+# Node (ew) 
+# ----------------------
+# We probably don't even need node at runtime, so when we 
+#   create better images later on we can leave it out 
+# ======================
+
+# The beast itself
+RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
+RUN apt-get install -y nodejs
+
+# Please, save me from this package manager 
+RUN npm install -g yarn 
+RUN yarn set version berry
+
+# Ah, finally 
+COPY package.json yarn.lock ./
+RUN yarn install

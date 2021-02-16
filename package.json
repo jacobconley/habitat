@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "webpack": "^5.15.0"
+  },
+
+  "engines": {
+    "node": ">=15.6.0"
+  }
+}
