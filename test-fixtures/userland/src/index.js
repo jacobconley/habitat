@@ -1,0 +1,1 @@
+export const CONSTANT='TEST_42069_VALUE'; 

@@ -1,3 +1,5 @@
 node_modules/
 
-test-fixture/main 
+
+# Server executable
+test-fixtures/userland/main  
