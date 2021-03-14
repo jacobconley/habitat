@@ -10,6 +10,12 @@ jobs:
       - run: rm -rf ./* ./.[!.]*
       - checkout
 
+      - run: 
+          name: Set up test fixtures
+          command: |
+            cd test-fixtures/userland
+            yarn install
+
       - run: build/test-e2e
 
 
