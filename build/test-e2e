@@ -8,7 +8,7 @@ cd $GOPATH/src/github.com/jacobconley/habitat
 
 
 SRV=localhost:3000
-cd test-fixture
+cd test-fixtures/userland
 
 
 echo "test-e2e: Building test fixture"
@@ -38,9 +38,14 @@ done
 
  
 echo "test-e2e: starting tests"
+
+cd ../../test/e2e 
+TESTS=$(echo *)
+TESTS=${TESTS[$]/init_test.go}
+
 if 
     go clean -testcache
-    go test ../test/e2e/* 
+    go test init_test.go && go test $TESTS
 then 
     TESTFAIL=0
     echo "test-e2e: All tests passed"

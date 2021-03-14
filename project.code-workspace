@@ -2,7 +2,27 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "test/e2e",
+			"name": "E2E Tests"
+		},
+		{
+			"path": "test-fixtures/userland",
+			"name": "E2E Userland"
+		},
+		{
+			"path": "src",
+			"name": "Source Main"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+		}
+	}
 }

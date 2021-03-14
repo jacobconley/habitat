@@ -5,5 +5,11 @@
 
   "engines": {
     "node": ">=15.6.0"
-  }
+  },
+
+  "files": [
+    "src-webpack/"
+  ],
+
+  "private": true
 }

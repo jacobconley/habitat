@@ -1,0 +1,9 @@
+# Defaults 
+
+dirs = [ 'src' ]
+
+
+[pipeline] 
+
+style           = [ 'main.css', '*' ]
+webpack-out     = '.habitat/webpack-out/'
