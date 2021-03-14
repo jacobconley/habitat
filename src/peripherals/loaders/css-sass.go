@@ -1,7 +1,7 @@
 package loaders
 
 import (
-	"bufio"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,7 +53,6 @@ func (css CSS) Build() error {
 		err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error { 
 
 			if css.PathMatches(path) { 
-				log.Debugf("[SASS] (-> %s) %s", css.TargetFile, path) 
 				files = append(files, path)
 			}
 			return nil 
@@ -79,6 +78,12 @@ func (css CSS) Build() error {
 
 	// Do the buildin' 
 
+	if err := os.MkdirAll(filepath.Dir(css.TargetFile), os.FileMode(int(0777))); err != nil { 
+		log.Error("[SASS] Could not create output directory; ", err) 
+		return err
+	}
+
+
 	// Output (target) file
 	targetFile, tferr := os.OpenFile(css.TargetFile, os.O_CREATE | os.O_RDWR | os.O_TRUNC, os.FileMode(int(0666)))
 	if tferr != nil { 
@@ -87,7 +92,6 @@ func (css CSS) Build() error {
 	}
 
 	defer targetFile.Close()
-	targetWriter := bufio.NewWriter(targetFile)
 
 
 	// Log file
@@ -99,16 +103,16 @@ func (css CSS) Build() error {
 	log.Debugf("[SASS] Logging to '%s'", logFilepath)
 
 	defer logFile.Close()
-	logWriter := bufio.NewWriter(logFile)
 
-
-
-
-	var retval error 
 
 
 	// Each input file
 	for _, fpath := range files { 
+
+		log.Debugf("[SASS] Building '%s'", fpath)
+
+		// The CSS parser we use in tests gets confused about comments
+		// targetFile.WriteString( fmt.Sprintf("\n/* --- %s --- */\n\n", fpath) )
 
 		cmd := exec.Command( config.GetNodeSass(), fpath)
 		stdout, outErr := cmd.StdoutPipe()
@@ -116,9 +120,9 @@ func (css CSS) Build() error {
 
 
 		if outErr != nil || errErr != nil { 
-			log.Error("[SASS] Error initializing pipes")
-			log.Error("[SASS] stdOut: ", outErr)
-			log.Error("[SASS] stdErr: ", errErr) 
+			log.Error("-> Error initializing pipes")
+			log.Error("   stdOut: ", outErr)
+			log.Error("   stdErr: ", errErr) 
 			
 			if outErr != nil { 
 				return outErr
@@ -127,74 +131,26 @@ func (css CSS) Build() error {
 			}
 		}
 
-
-		outReader := bufio.NewReader(stdout)
-		errReader := bufio.NewReader(stderr) 
-		outBuf := make([]byte, 256)
-		errBuf := make([]byte, 256)
-
-		readOut := true
-		readErr := true 
-
 		cmd.Start()		
 
-		for { 
-			if readOut && retval == nil { 
-				outN, outErr := outReader.Read(outBuf)
+		_, outErr = io.Copy(targetFile, stdout)
+		_, errErr = io.Copy(logFile, stderr)
 
-				if outN == 0 { 
-					log.Debug("[SASS] -> STDOUT Done")
-					readOut = false 
-				} else { 
-
-					if outErr != nil { 
-						log.Error("[SASS] Error piping output to target file: ", outErr)
-						retval = outErr
-					} else { 
-						_, tferr = targetWriter.Write(outBuf[0:outN])
-
-						if tferr != nil { 
-							log.Error("[SASS] Error writing to target file: ", tferr)
-							retval = tferr
-						}
-					}
-
-				}
-			}
-
-
-			if readErr && retval == nil { 
-				errN, errErr := errReader.Read(errBuf)
-
-				if errN == 0 { 
-					log.Debug("[SASS] -> STDERR Done")
-					readErr = false 
-				} else { 
-
-					if errErr != nil { 
-						log.Error("[SASS] Error piping stderr to log file: ", errErr)
-						retval = errErr
-					} else { 
-						_, logErr = logWriter.Write(errBuf[0:errN])
-
-						if logErr != nil { 
-							log.Error("[SASS] Error writing to log file: ", logErr)
-							retval = logErr
-						}
-					}
-
-				}
-			}
-
-
-			if (readOut || readErr) == false { 
-				break
+		if outErr != nil || errErr != nil { 
+			log.Error("-> Error piping output")
+			log.Error("   stdOut: ", outErr)
+			log.Error("   stdErr: ", errErr) 
+			
+			if outErr != nil { 
+				return outErr
+			} else { 
+				return errErr 
 			}
 		}
 	}
 
 
-	return retval
+	return nil
 }
 
 // Watch -- 

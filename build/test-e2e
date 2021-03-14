@@ -41,7 +41,7 @@ echo "test-e2e: starting tests"
 
 cd ../../test/e2e 
 TESTS=$(echo *)
-TESTS=${TESTS[$]/init_test.go}
+TESTS=${TESTS[@]/init_test.go}
 
 if 
     go clean -testcache

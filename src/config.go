@@ -57,9 +57,9 @@ func (c Config) GetDirOutput() string {
 
 // OpenLogFile opens the given path within the log directory.
 func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) { 
-	logpath := filepath.Join(c.getInternalDir("logs"), path) 
+	path = filepath.Join(c.getInternalDir("logs"), path) 
 	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
-	return file, logpath, error
+	return file, path, error
 }
 
 func (c Config) OpenLogFileTruncate(path string) (*os.File, string, error) { 

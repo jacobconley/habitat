@@ -15,7 +15,7 @@ import (
 
 func ReadAsset(t *testing.T, asset string) ([]byte, string) { 
 
-	file, err := os.Open("../../test-fixture/assets/" + asset)
+	file, err := os.Open("../../test-fixtures/userland/assets/" + asset)
 
 	if err != nil { 
 		t.Log("Error opening file", err) 
