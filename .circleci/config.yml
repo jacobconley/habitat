@@ -7,7 +7,10 @@ jobs:
 
     working_directory: /go/src/github.com/jacobconley/habitat/
     steps:
-      - run: rm -rf ./* ./.[!.]*
+      - run: 
+          name: Clear metadata
+          command: rm -rf ./* ./.[!.]*
+          
       - checkout
 
       - run: 
