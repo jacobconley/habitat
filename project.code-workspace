@@ -12,6 +12,10 @@
 			"name": "E2E Userland"
 		},
 		{
+			"path": "src-webpack",
+			"name": "Webpack plugin"
+		},
+		{
 			"path": "src",
 			"name": "Source Main"
 		}

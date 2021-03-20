@@ -59,6 +59,12 @@ func (c Config) GetDirOutput() string {
 func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) { 
 	path = filepath.Join(c.getInternalDir("logs"), path) 
 	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
+
+	if error != nil { 
+		log.Errorf("Error opening file '%s'", path)
+		log.Error(error)
+	}
+
 	return file, path, error
 }
 

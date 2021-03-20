@@ -1,8 +1,7 @@
 package peripherals
 
 import (
-	habitat "habitat/src"
-	"habitat/src/peripherals/loaders"
+	log "github.com/sirupsen/logrus"
 )
 
 //Pipeline manages the processing of project files as defined by the config
@@ -34,11 +33,22 @@ type Loader interface {
 }
 
 
-// GetLoadersFromConfig gets all peripheral loaders
-func GetLoadersFromConfig(config * habitat.Config) []Loader { 
-	return []Loader { 
 
-		loaders.NewCSSFromConfig(config),
 
+func BuildAll() error { 
+
+	log.Debug("Building all peripherals...")
+	
+	if err, _ := BuildCSS(); err != nil { 
+		log.Error("SASS build failed")
+		return err 
 	}
+
+	
+	if err := BuildWebpack(); err != nil {
+		log.Error("Webpack build failed")
+		return err
+	}
+
+	return nil 
 }

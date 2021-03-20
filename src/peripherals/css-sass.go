@@ -1,4 +1,4 @@
-package loaders
+package peripherals
 
 import (
 	"io"
@@ -29,6 +29,22 @@ func NewCSSFromConfig(config * habitat.Config) CSS {
 
 		TargetFile: 	".habitat/out/css",
 	}
+}
+
+func GetCssLoaders(config * habitat.Config) []CSS { 
+	return []CSS { 
+		NewCSSFromConfig(config),
+	}
+}
+
+func BuildCSS() (error, []CSS) { 
+	config, err := habitat.GetConfig()
+	if err != nil { 
+		return err, nil
+	}
+
+	loader := NewCSSFromConfig(config)
+	return loader.Build(), []CSS{ loader }
 }
 
 
@@ -97,7 +113,6 @@ func (css CSS) Build() error {
 	// Log file
 	logFile, logFilepath, logErr := config.OpenLogFileTruncate("sass.log")
 	if logErr != nil { 
-		log.Error("[SASS] Could not open log file", logErr)
 		return logErr
 	}
 	log.Debugf("[SASS] Logging to '%s'", logFilepath)
