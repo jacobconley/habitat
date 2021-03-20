@@ -5,13 +5,13 @@ import (
 	"os"
 	"testing"
 
-	peripherals "habitat/src/peripherals"
+	auxiliary "habitat/src/auxiliary"
 )
 
 func TestCSS(t *testing.T) {
 	os.Chdir("../../test-fixtures/userland")
 	
-	err, loader := peripherals.BuildCSS()
+	err, loader := auxiliary.BuildCSS()
 
 	if err := loader[0].Build(); err != nil { 
 		t.Fatal("Build failed") 
@@ -33,7 +33,7 @@ func TestCSS(t *testing.T) {
 func TestWebpack(t *testing.T) { 
 	os.Chdir("../../test-fixtures/userland")
 
-	err := peripherals.BuildWebpack()
+	err := auxiliary.BuildWebpack()
 
 	if err != nil { 
 		t.Fatal("Webpack build failed")

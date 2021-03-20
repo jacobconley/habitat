@@ -1,4 +1,4 @@
-package peripherals
+package auxiliary
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -37,7 +37,7 @@ type Loader interface {
 
 func BuildAll() error { 
 
-	log.Debug("Building all peripherals...")
+	log.Debug("Building all auxiliary...")
 	
 	if err, _ := BuildCSS(); err != nil { 
 		log.Error("SASS build failed")
