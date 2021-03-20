@@ -1,6 +1,5 @@
 const { mkdir, mkdirSync } = require('fs');
 const path = require('path'); 
-const { Compilation } = require('webpack');
 
 class Habitat { 
 
