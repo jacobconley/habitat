@@ -2,8 +2,7 @@ version: 2.1
 jobs:
   test-end-to-end:
     docker:
-      # specify the version
-      - image: jacobconley/habitat:buster-base@sha256:bc40b30828eec5a34f2b35bb1887b5675c230a1fcf81f634e45453c12f031c84
+      - image: jacobconley/habitat:buster-base@sha256:55c4b6c82f103b62f9a8e610ca624a635c05b3ed453ba14c375d712323807900
 
     working_directory: /go/src/github.com/jacobconley/habitat/
     steps:
@@ -12,6 +11,8 @@ jobs:
           command: rm -rf ./* ./.[!.]*
           
       - checkout
+
+      - run: service postgresql start
 
       - run: 
           name: Set up test fixtures

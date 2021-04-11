@@ -5,13 +5,12 @@ set +H
 GOPATH="${GOPATH:-$HOME/go}"
 cd $GOPATH/src/github.com/jacobconley/habitat
 
-
-
 SRV=localhost:3000
 cd test-fixtures/userland
 
 
-echo "test-e2e: Building test fixture"
+
+echo "test-e2e: Building test fixture server"
 go build main.go 
 
 
@@ -22,14 +21,23 @@ SRV_PID=$!
 
 
 # Wait for it to be ready 
-while true 
+RETRY_LIMIT=5
+i=0
+while true
 do
     sleep 0.5
     if curl --silent $SRV > /dev/null; then 
         echo "test-e2e: connected"
         break
     else 
-        echo "x - retrying"
+        i=$((i + 1))
+
+        if [[ $i > $RETRY_LIMIT ]]; then 
+            echo "test-e2e: Could not connect to test server; retry limit exceeded"
+            exit 1
+        fi
+
+        echo "[X] retrying ($i / $RETRY_LIMIT)"
         sleep 1
     fi
 done
@@ -39,13 +47,15 @@ done
  
 echo "test-e2e: starting tests"
 
+# This constructs an array of everything but init_test.go, allowing us to run it first and then everything else
+# When I first wrote this I assumed it had to be run on init because of the name, but now that I look at it I don't think there's anything special about it.  lol.  I'll keep this anyways 
 cd ../../test/e2e 
 TESTS=$(echo *)
 TESTS=${TESTS[@]/init_test.go}
 
 if 
     go clean -testcache
-    go test init_test.go && go test $TESTS
+    go test init_test.go && go test -v $TESTS
 then 
     TESTFAIL=0
     echo "test-e2e: All tests passed"

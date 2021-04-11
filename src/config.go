@@ -1,10 +1,12 @@
 package habitat
 
 import (
+	"encoding/json"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/komkom/toml"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,65 +27,17 @@ type Config struct {
 
 	binSass			string 
 	binWebpack 		string 
+
+	toml			tomlRoot
 }
 
 
 
-// GetProjectRootDir --
-func (c Config) GetProjectRootDir() string { 
-	return c.RootDir
+type tomlRoot struct { 
+
+	Database 		tomlDB // `json:"database"`
+
 }
-
-
-func (c Config) getInternalDir(path ...string) string { 
-	res := filepath.Join( append( []string{ c.RootDir, HabitatDir } , path[:]... )... )
-	os.MkdirAll(res, os.FileMode(int(0777)))
-	return res 
-}
-
-
-// GetDir --
-func (c Config) GetDir() string { 
-	return filepath.Join( c.RootDir, HabitatDir )
-}
-// GetDirCache --
-func (c Config) GetDirCache() string { 
-	return c.getInternalDir( "tmp", "cache" )
-}
-// GetDirOutput --
-func (c Config) GetDirOutput() string { 
-	return c.getInternalDir( "tmp", "output")
-}
-
-// OpenLogFile opens the given path within the log directory.
-func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) { 
-	path = filepath.Join(c.getInternalDir("logs"), path) 
-	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
-
-	if error != nil { 
-		log.Errorf("Error opening file '%s'", path)
-		log.Error(error)
-	}
-
-	return file, path, error
-}
-
-func (c Config) OpenLogFileTruncate(path string) (*os.File, string, error) { 
-	return c.OpenLogFile(path, os.O_RDWR | os.O_CREATE | os.O_TRUNC)
-}
-
-
-// GetNodeSass Path to Sass executable
-func (c Config) GetNodeSass() string { 
-	return c.binSass
-}
-// GetNodeWebpack Path to webpack executable
-func (c Config) GetNodeWebpack() string { 
-	return c.binWebpack
-}
-
-
-
 
 
 var config *Config 
@@ -114,7 +68,28 @@ func GetConfig() (*Config, error) {
 	projectRoot := findRoot(cwd) 
 	log.Debugf("Found project root: %s", projectRoot)
 	os.Chdir( projectRoot ) 
-	
+
+
+
+	// Read config file
+	tomlVal := tomlRoot{} 
+
+	cfp := filepath.Join(projectRoot, ConfigFile)
+	tomlFile, err := os.Open(cfp)
+	if err != nil { 
+		log.Errorf("Could not open config file '%s'", ConfigFile)
+		log.Error(err)
+		return nil, err
+	}
+	defer tomlFile.Close()
+
+	tomlDecoder := json.NewDecoder( toml.New( tomlFile ) )
+	err = tomlDecoder.Decode( &tomlVal )	
+	if err != nil { 
+		log.Errorf("Could not read config file '%s'", ConfigFile)
+		log.Error(err)
+		return nil, err
+	}
 	
 
 
@@ -123,6 +98,15 @@ func GetConfig() (*Config, error) {
 
 		RootDir: 		projectRoot,
 		ProjectDirs: 	[]string { "src/" },
+
+		toml: 			tomlVal,
+	}
+	log.Debug(config.toml.Database.Port)
+	log.Debug(config.toml.Database.Dialect)
+
+	if err := config.processDB(); err != nil { 
+		log.Error("Could not process DB config")
+		return nil, err 
 	}
 
 
@@ -132,6 +116,7 @@ func GetConfig() (*Config, error) {
 
 	return config, nil 
 }
+
 
 
 
@@ -151,3 +136,62 @@ func findRoot( dir string ) string {
 	return findRoot( filepath.Dir( dir ) ) // Parent directory
 }
 
+
+
+
+
+
+// GetProjectRootDir --
+func (c Config) GetProjectRootDir() string { 
+	return c.RootDir
+}
+
+
+func (c Config) getInternalDir(path ...string) string { 
+	res := filepath.Join( append( []string{ c.RootDir, HabitatDir } , path[:]... )... )
+	os.MkdirAll(res, os.FileMode(int(0777)))
+	return res 
+}
+
+
+// GetDir --
+func (c Config) GetDir() string { 
+	return filepath.Join( c.RootDir, HabitatDir )
+}
+// GetDirCache --
+func (c Config) GetDirCache() string { 
+	return c.getInternalDir( "tmp", "cache" )
+}
+// GetDirOutput --
+func (c Config) GetDirOutput() string { 
+	return c.getInternalDir( "tmp", "output")
+}
+
+
+// OpenLogFile opens the given path within the log directory.
+func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) { 
+	path = filepath.Join(c.getInternalDir("logs"), path) 
+	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
+
+	if error != nil { 
+		log.Errorf("Error opening file '%s'", path)
+		log.Error(error)
+	}
+
+	return file, path, error
+}
+
+func (c Config) OpenLogFileTruncate(path string) (*os.File, string, error) { 
+	return c.OpenLogFile(path, os.O_RDWR | os.O_CREATE | os.O_TRUNC)
+}
+
+
+
+// GetNodeSass Path to Sass executable
+func (c Config) GetNodeSass() string { 
+	return c.binSass
+}
+// GetNodeWebpack Path to webpack executable
+func (c Config) GetNodeWebpack() string { 
+	return c.binWebpack
+}

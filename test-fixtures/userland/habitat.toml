@@ -1,9 +1,14 @@
-# Defaults 
-
 dirs = [ 'src' ]
 
 
 [pipeline] 
-
 style           = [ 'main.css', '*' ]
 webpack-out     = '.habitat/webpack-out/'
+
+[database]
+dialect         = 'postgresql'
+user            = 'habitat'
+password        = 'pazzwerd'
+database        = 'habitat_test'
+host            = 'localhost'
+port            = '5432' # whyyy is this a string can we generalize this 
