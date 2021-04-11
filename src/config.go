@@ -101,8 +101,6 @@ func GetConfig() (*Config, error) {
 
 		toml: 			tomlVal,
 	}
-	log.Debug(config.toml.Database.Port)
-	log.Debug(config.toml.Database.Dialect)
 
 	if err := config.processDB(); err != nil { 
 		log.Error("Could not process DB config")
@@ -147,8 +145,8 @@ func (c Config) GetProjectRootDir() string {
 }
 
 
-func (c Config) getInternalDir(path ...string) string { 
-	res := filepath.Join( append( []string{ c.RootDir, HabitatDir } , path[:]... )... )
+func (c Config) getProjectDir(path ...string) string { 
+	res := filepath.Join( append( []string{ c.RootDir } , path[:]... )... )
 	os.MkdirAll(res, os.FileMode(int(0777)))
 	return res 
 }
@@ -160,17 +158,31 @@ func (c Config) GetDir() string {
 }
 // GetDirCache --
 func (c Config) GetDirCache() string { 
-	return c.getInternalDir( "tmp", "cache" )
+	return c.getProjectDir( HabitatDir, "tmp", "cache" )
 }
 // GetDirOutput --
 func (c Config) GetDirOutput() string { 
-	return c.getInternalDir( "tmp", "output")
+	return c.getProjectDir( HabitatDir, "tmp", "output")
 }
+
+
+func (c Config) GetDirDB() string { 
+	return c.getProjectDir( "db" )
+}
+func (c Config) GetDirMigrations() string { 
+	return c.getProjectDir( "db", "migrations" )
+}
+
+func (c Config) GetDirModels() string { 
+	return c.getProjectDir( "db", "models" )
+}
+
+
 
 
 // OpenLogFile opens the given path within the log directory.
 func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) { 
-	path = filepath.Join(c.getInternalDir("logs"), path) 
+	path = filepath.Join(c.getProjectDir( HabitatDir, "logs" ), path) 
 	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
 
 	if error != nil { 

@@ -43,9 +43,9 @@ do
 done
 
 
+echo "test-e2e: Starting tests"
 
- 
-echo "test-e2e: starting tests"
+
 
 # This constructs an array of everything but init_test.go, allowing us to run it first and then everything else
 # When I first wrote this I assumed it had to be run on init because of the name, but now that I look at it I don't think there's anything special about it.  lol.  I'll keep this anyways 

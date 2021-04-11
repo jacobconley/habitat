@@ -29,3 +29,4 @@ func (c * Config) processDB() error  {
 func (c Config) NewConnection() (*pop.Connection, error) { 
 	return pop.NewConnection((*pop.ConnectionDetails)(&c.toml.Database))
 }
+
