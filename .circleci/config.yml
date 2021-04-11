@@ -15,16 +15,18 @@ jobs:
       - run: 
           name: Start PostgreSQL
           command: service postgresql start
-      
-      - run:
-          name: Run migrations
-          command: cd test-fixtures/userland && go run ../../habitat.go db migrate
 
       - run: 
           name: Set up test fixtures
           command: |
             cd test-fixtures/userland
             yarn install
+      
+      - run:
+          name: Run migrations
+          command: |
+            cd test-fixtures/userland
+            go run ../../habitat.go db migrate
 
       - run: build/test-e2e
 
