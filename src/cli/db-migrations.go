@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	habitat "habitat/src"
+	"strconv"
 
 	"github.com/gobuffalo/pop/v5"
 	log "github.com/sirupsen/logrus"
@@ -13,12 +14,32 @@ import (
 // cf. https://github.com/gobuffalo/soda/blob/master/cmd/migrate.go
 
 var migrateCmd = &cobra.Command{ 
-	Use: 	"migrate",
+	Use: 	"migrate ([up] | down <number of steps>)",
 	Short: 	"Runs all pending migrations on your database",
 
 	RunE: func(cmd *cobra.Command, args []string) error { 
+		
+		var up = true
+		var steps = 0 
 		if len(args) > 0 { 
-			return errors.New("This command does not accept any arguments")
+
+			if args[0] == "down" { 
+				up = false
+
+				if len(args) == 2 { 
+					var err error
+					steps, err = strconv.Atoi(args[1])
+					if err != nil { 
+						return err
+					}
+				} else { 
+					return errors.New("Expected number of steps")
+				}
+
+			} else if !(len(args) == 1 && args[0] == "up") { 
+				return errors.New("Invalid argument")
+			}
+
 		}
 
 		config, err := habitat.GetConfig()
@@ -39,7 +60,11 @@ var migrateCmd = &cobra.Command{
 
 		mig.SchemaPath = config.GetDirDB()
 
-		return mig.Up()
+		if up { 
+			return mig.Up()
+		} else { 
+			return mig.Down(steps)
+		}
 	},
 }
 

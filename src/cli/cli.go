@@ -3,7 +3,6 @@ package cli
 import (
 	"os"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +18,6 @@ var cmdroot = &cobra.Command{
 
 func RunCLI() {
 	if err := cmdroot.Execute(); err != nil {
-		log.Fatal(err)
 		os.Exit(1)
 	}
 }

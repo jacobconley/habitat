@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   test-end-to-end:
     docker:
-      - image: jacobconley/habitat:buster-base@sha256:55c4b6c82f103b62f9a8e610ca624a635c05b3ed453ba14c375d712323807900
+      - image: jacobconley/habitat:buster-base@sha256:66d6fbeaccb32563b883eeecd5a1b73a0101a6a5487f6a142e8a8b84a92d9b0d
 
     working_directory: /go/src/github.com/jacobconley/habitat/
     steps:
