@@ -46,19 +46,6 @@ CREATE TABLE public.schema_migration (
 ALTER TABLE public.schema_migration OWNER TO habitat;
 
 --
--- Name: thang; Type: TABLE; Schema: public; Owner: habitat
---
-
-CREATE TABLE public.thang (
-    name character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.thang OWNER TO habitat;
-
---
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: habitat
 --
 

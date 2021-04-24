@@ -1,3 +1,0 @@
-create_table("thang") { 
-    t.Column("name", "string", {})
-}

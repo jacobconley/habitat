@@ -18,7 +18,7 @@ import (
 
 var genMigrationCmd = &cobra.Command { 
 	Use: 	"migration <name> [attrs]",
-	Short: 	"Generates a new pair of up/down Fizz migrations with the given name",
+	Short: 	"Generates a new pair of up/down Fizz migrations with the given name and attributes",
 
 	RunE: func(cmd * cobra.Command, args []string) error { 
 
@@ -29,7 +29,7 @@ var genMigrationCmd = &cobra.Command {
 				return errors.New("For now, the migration name must consist only of alphanumeric characters and underscores - feel free to yell on the issues page if you want")
 			}
 		} else { 
-			return errors.New("Required table name")
+			return errors.New("Table name is required")
 		}
 
 		var ( 

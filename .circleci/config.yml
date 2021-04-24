@@ -23,7 +23,7 @@ jobs:
             yarn install
       
       - run:
-          name: Run migrations
+          name: Run CLI setup
           command: |
             cd test-fixtures/userland
             go run ../../habitat.go db migrate

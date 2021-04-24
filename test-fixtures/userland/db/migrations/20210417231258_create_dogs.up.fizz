@@ -1,0 +1,6 @@
+create_table("dogs") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("name", "string", {})
+	t.Column("age", "integer", {})
+	t.Timestamps()
+}
