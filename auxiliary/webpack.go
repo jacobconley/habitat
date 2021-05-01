@@ -1,15 +1,16 @@
 package auxiliary
 
 import (
-	habitat "habitat/src"
 	"os"
 	"os/exec"
+
+	"github.com/jacobconley/habitat/habconf"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func BuildWebpack() error {
-	config, err := habitat.GetConfig()
+	config, err := habconf.LoadConfig()
 	if err != nil { 
 		return err
 	}

@@ -1,4 +1,4 @@
-package habitat
+package habconf
 
 import (
 	"github.com/gobuffalo/pop/v5"
@@ -26,7 +26,9 @@ func (c * Config) processDB() error  {
 
 
 // [ISSUE #7] Parameter here
-func (c Config) NewConnection() (*pop.Connection, error) { 
-	return pop.NewConnection((*pop.ConnectionDetails)(&c.toml.Database))
+func (c Config) PopConnectionDetails() * pop.ConnectionDetails { 
+	return (*pop.ConnectionDetails)(&c.toml.Database)
 }
-
+func (c Config) NewConnection() (*pop.Connection, error) { 
+	return pop.NewConnection( c.PopConnectionDetails() )
+}

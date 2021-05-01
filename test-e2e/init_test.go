@@ -1,15 +1,16 @@
 package e2e
 
 import (
-	habitat "habitat/src"
 	"os"
 	"testing"
+
+	"github.com/jacobconley/habitat/habconf"
 )
 
 func TestSetup(t * testing.T) { 
-	os.Chdir("../../test-fixtures/userland")
+	os.Chdir("../test-fixtures/userland")
 
-	_, err := habitat.GetConfig() 
+	_, err := habconf.LoadConfig() 
 	if err != nil { 
 		t.Error("Error initializing config: ", err)
 	}

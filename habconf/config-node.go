@@ -1,4 +1,4 @@
-package habitat
+package habconf
 
 import (
 	"errors"

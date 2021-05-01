@@ -3,13 +3,13 @@ package cli
 import (
 	"context"
 	"errors"
-	habitat "habitat/src"
 	"regexp"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/pop/v5/genny/fizz/cempty"
 	"github.com/gobuffalo/pop/v5/genny/fizz/ctable"
+	"github.com/jacobconley/habitat/habconf"
 	"github.com/spf13/cobra"
 )
 
@@ -46,11 +46,7 @@ var genMigrationCmd = &cobra.Command {
 
 		runner := genny.WetRunner(context.Background())
 		
-		config, err := habitat.GetConfig()
-		if err != nil { 
-			return err 
-		}
-		path := config.GetDirMigrations()
+		path := habconf.GetConfig().GetDirMigrations()
 
 
 		var g * genny.Generator

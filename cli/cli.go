@@ -3,8 +3,11 @@ package cli
 import (
 	"os"
 
+	"github.com/jacobconley/habitat/habconf"
 	"github.com/spf13/cobra"
 )
+
+
 
 var cmdroot = &cobra.Command{
 
@@ -17,6 +20,11 @@ var cmdroot = &cobra.Command{
 }
 
 func RunCLI() {
+
+	if _, err := habconf.LoadConfig(); err != nil { 
+		os.Exit(1)
+	}
+
 	if err := cmdroot.Execute(); err != nil {
 		os.Exit(1)
 	}

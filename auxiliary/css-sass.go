@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	habitat "habitat/src"
+	"github.com/jacobconley/habitat/habconf"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -21,8 +21,8 @@ type CSS struct {
 	TargetFile 			string
 }
 
-// NewCSSFromConfig Creates the default loader implied by the given habitat.Config
-func NewCSSFromConfig(config * habitat.Config) CSS { 
+// NewCSSFromConfig Creates the default loader implied by the given habconf.Config
+func NewCSSFromConfig(config * habconf.Config) CSS { 
 	return CSS { 
 		SourceDirs: 	config.ProjectDirs,
 		SourceFiles: 	[]string{},
@@ -31,14 +31,14 @@ func NewCSSFromConfig(config * habitat.Config) CSS {
 	}
 }
 
-func GetCssLoaders(config * habitat.Config) []CSS { 
+func GetCssLoaders(config * habconf.Config) []CSS { 
 	return []CSS { 
 		NewCSSFromConfig(config),
 	}
 }
 
 func BuildCSS() (error, []CSS) { 
-	config, err := habitat.GetConfig()
+	config, err := habconf.LoadConfig()
 	if err != nil { 
 		return err, nil
 	}
@@ -82,7 +82,7 @@ func (css CSS) Build() error {
 	}
 
 
-	config, err := habitat.GetConfig()
+	config, err := habconf.LoadConfig()
 	if err != nil { 
 		return err 
 	}

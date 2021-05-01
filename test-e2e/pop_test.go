@@ -1,17 +1,17 @@
 package e2e
 
 import (
-	habitat "habitat/src"
 	"os"
 	"testing"
 
+	"github.com/jacobconley/habitat/habconf"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestConnectionOpen(t * testing.T) { 
-	os.Chdir("../../test-fixtures/userland")
+	os.Chdir("../test-fixtures/userland")
 
-	config, err := habitat.GetConfig() 
+	config, err := habconf.LoadConfig() 
 	assert.Nil(t, err) 
 
 

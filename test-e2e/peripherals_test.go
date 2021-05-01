@@ -5,11 +5,11 @@ import (
 	"os"
 	"testing"
 
-	auxiliary "habitat/src/auxiliary"
+	"github.com/jacobconley/habitat/auxiliary"
 )
 
 func TestCSS(t *testing.T) {
-	os.Chdir("../../test-fixtures/userland")
+	os.Chdir("../test-fixtures/userland")
 	
 	err, loader := auxiliary.BuildCSS()
 
@@ -31,7 +31,7 @@ func TestCSS(t *testing.T) {
 
 
 func TestWebpack(t *testing.T) { 
-	os.Chdir("../../test-fixtures/userland")
+	os.Chdir("../test-fixtures/userland")
 
 	err := auxiliary.BuildWebpack()
 

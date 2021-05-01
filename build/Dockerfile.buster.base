@@ -17,7 +17,7 @@ RUN apt-get -y install postgresql-10
 
 # let us log in locally w/ password
 WORKDIR /etc/postgresql/10/main 
-RUN cat pg_hba.conf | sed -E 's/(local\s*)((all\s*){2})peer/\1\2md5/' > pg_hba.conf 
+RUN cat  'local all all trust' > pg_hba.conf 
 WORKDIR ${APPROOT}
 
 # create the user and db 

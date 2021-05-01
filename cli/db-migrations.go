@@ -2,10 +2,10 @@ package cli
 
 import (
 	"errors"
-	habitat "habitat/src"
 	"strconv"
 
 	"github.com/gobuffalo/pop/v5"
+	"github.com/jacobconley/habitat/habconf"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -42,23 +42,26 @@ var migrateCmd = &cobra.Command{
 
 		}
 
-		config, err := habitat.GetConfig()
-		if err != nil { 
-			return err 
-		}
 
-		conn, err := config.NewConnection()
+		conf := habconf.GetConfig()
+
+
+		conn, err := conf.NewConnection()
 		if err != nil { 
 			log.Error("Could not establish connection: ", err)
 			return err
 		}
 
-		mig, err := pop.NewFileMigrator(config.GetDirMigrations(), conn)
+		conn.Open()
+		defer conn.Close()
+		
+
+		mig, err := pop.NewFileMigrator(conf.GetDirMigrations(), conn)
 		if err != nil { 
 			return err
 		}
 
-		mig.SchemaPath = config.GetDirDB()
+		mig.SchemaPath = conf.GetDirDB()
 
 		if up { 
 			return mig.Up()

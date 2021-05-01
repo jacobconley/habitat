@@ -1,7 +1,8 @@
-package habitat
+package habconf
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -42,8 +43,16 @@ type tomlRoot struct {
 
 var config *Config 
 
-//GetConfig Loads and returns the configuration appropriate for the current environment
-func GetConfig() (*Config, error) { 
+// GetConfig presumes that the config has already been loaded with LoadConfig() and returns it
+func GetConfig() * Config { 
+	if config == nil { 
+		panic("Config not loaded")
+	}
+	return config 
+}
+
+//GetConfig loads and returns the configuration appropriate for the current environment, or returns the memoized config if it has already been loaded
+func LoadConfig() (*Config, error) { 
 	log.SetLevel(log.DebugLevel)
 
 	if config != nil { 
@@ -120,6 +129,7 @@ func GetConfig() (*Config, error) {
 
 // Project root
 func findRoot( dir string ) string { 
+	fmt.Println(dir)
 
 	if _, err := os.Stat( path.Join(dir, ConfigFile ) ); err == nil { 
 		return dir

@@ -1,8 +1,6 @@
-package main
+package habitat
 
-import (
-	"habitat/src/cli"
-)
+import "github.com/jacobconley/habitat/cli"
 
 func main() {
 	cli.RunCLI()

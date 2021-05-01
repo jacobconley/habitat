@@ -3,22 +3,6 @@
 		{
 			"path": "."
 		},
-		{
-			"path": "test/e2e",
-			"name": "E2E Tests"
-		},
-		{
-			"path": "test-fixtures/userland",
-			"name": "E2E Userland"
-		},
-		{
-			"path": "src-webpack",
-			"name": "Webpack plugin"
-		},
-		{
-			"path": "src",
-			"name": "Source Main"
-		}
 	],
 	"settings": {
 		"files.exclude": {

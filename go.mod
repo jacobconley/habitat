@@ -1,4 +1,4 @@
-module habitat
+module github.com/jacobconley/habitat
 
 go 1.15
 

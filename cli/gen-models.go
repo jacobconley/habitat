@@ -3,10 +3,10 @@ package cli
 import (
 	"context"
 	"errors"
-	habitat "habitat/src"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/genny/v2"
+	"github.com/jacobconley/habitat/habconf"
 	"github.com/spf13/cobra"
 
 	"github.com/gobuffalo/pop/v5/genny/fizz/ctable"
@@ -42,20 +42,16 @@ var genModelCmd = &cobra.Command {
 			}
 		}
 
+		conf := habconf.GetConfig()
 		runner := genny.WetRunner(context.Background())
 		
-		config, err := habitat.GetConfig()
-		if err != nil { 
-			return err 
-		}
-
 		
 		g, err := gmodel.New(  &gmodel.Options { 
 			Name: 	name, 
 			Attrs:  atts, 
 
 			Encoding: 				"json",
-			Path: 					config.GetDirModels(),
+			Path: 					conf.GetDirModels(),
 			ForceDefaultID:  		true,
 			ForceDefaultTimestamps:	true,
 		})
@@ -82,7 +78,7 @@ var genModelCmd = &cobra.Command {
 				Attrs: 			atts,
 
 				Type: 						"fizz",
-				Path: 						config.GetDirMigrations(),
+				Path:						conf.GetDirMigrations(),
 				ForceDefaultTimestamps:  	true,
 				ForceDefaultID:  			true,
 			})

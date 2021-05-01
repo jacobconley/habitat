@@ -1,15 +1,15 @@
 package main
 
 import (
-	"habitat/src/server"
+	"net/http"
 
+	"github.com/jacobconley/habitat/server"
 	log "github.com/sirupsen/logrus"
 )
 
 func main() { 
 	log.Info("Starting test fixture server")
 
-	if err := server.Serve(); err != nil { 
-		log.Fatal("An error!", err)
-	}
+	router := server.Router()
+	http.ListenAndServe(":3000", router)
 }
