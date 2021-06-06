@@ -8,7 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/komkom/toml"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 // ConfigFile --
@@ -53,12 +54,10 @@ func GetConfig() * Config {
 
 //GetConfig loads and returns the configuration appropriate for the current environment, or returns the memoized config if it has already been loaded
 func LoadConfig() (*Config, error) { 
-	log.SetLevel(log.DebugLevel)
 
 	if config != nil { 
 		return config, nil 
 	}
-	log.Debug("Loading config")
 
 
 	// Environment
@@ -68,6 +67,12 @@ func LoadConfig() (*Config, error) {
 	}
 
 
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	log.Debug().Str("env", env).Msg("Loading config")
+
+
 	// Root
 	cwd, err := os.Getwd()
 	if err != nil { 
@@ -75,7 +80,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	projectRoot := findRoot(cwd) 
-	log.Debugf("Found project root: %s", projectRoot)
+	log.Debug().Msgf("Found project root: %s", projectRoot)
 	os.Chdir( projectRoot ) 
 
 
@@ -86,8 +91,7 @@ func LoadConfig() (*Config, error) {
 	cfp := filepath.Join(projectRoot, ConfigFile)
 	tomlFile, err := os.Open(cfp)
 	if err != nil { 
-		log.Errorf("Could not open config file '%s'", ConfigFile)
-		log.Error(err)
+		log.Err(err).Msgf("Could not open config file '%s'", ConfigFile)
 		return nil, err
 	}
 	defer tomlFile.Close()
@@ -95,8 +99,7 @@ func LoadConfig() (*Config, error) {
 	tomlDecoder := json.NewDecoder( toml.New( tomlFile ) )
 	err = tomlDecoder.Decode( &tomlVal )	
 	if err != nil { 
-		log.Errorf("Could not read config file '%s'", ConfigFile)
-		log.Error(err)
+		log.Err(err).Msgf("Could not read config file '%s'", ConfigFile)
 		return nil, err
 	}
 	
@@ -112,7 +115,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	if err := config.processDB(); err != nil { 
-		log.Error("Could not process DB config")
+		log.Error().Msg("Could not process DB config")
 		return nil, err 
 	}
 
@@ -137,7 +140,7 @@ func findRoot( dir string ) string {
 
 
 	if dir == "/" { 
-		log.Errorf("Could not find `%s`", ConfigFile)
+		log.Fatal().Msgf("Could not find `%s`", ConfigFile)
 		panic(0);
 	}
 
@@ -196,8 +199,7 @@ func (c Config) OpenLogFile(path string, flag int) (*os.File, string, error) {
 	file, error := os.OpenFile(path, flag, os.FileMode(int(0777)))
 
 	if error != nil { 
-		log.Errorf("Error opening file '%s'", path)
-		log.Error(error)
+		log.Err(error).Msgf("Error opening file '%s'", path)
 	}
 
 	return file, path, error

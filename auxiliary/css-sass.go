@@ -9,7 +9,7 @@ import (
 
 	"github.com/jacobconley/habitat/habconf"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 // CSS --
@@ -59,6 +59,7 @@ func (css CSS) PathMatches(path string) bool {
 
 // Build finds all source files and executes `sass` on them with the confingured target file 
 func (css CSS) Build() error { 
+	logg := log.With().Str("aux", "sass").Logger()
 
 	// Find files
 
@@ -76,7 +77,7 @@ func (css CSS) Build() error {
 		} )
 
 		if err != nil {
-			log.Error("Error looking for source files", err) 
+			log.Err(err).Msg("looking for source files")
 			return err 
 		}
 	}
@@ -87,7 +88,7 @@ func (css CSS) Build() error {
 		return err 
 	}
 
-	log.Debugf("[SASS] Building to %s", css.TargetFile)
+	logg.Debug().Msgf("Building to %s", css.TargetFile)
 
 	
 
@@ -95,7 +96,7 @@ func (css CSS) Build() error {
 	// Do the buildin' 
 
 	if err := os.MkdirAll(filepath.Dir(css.TargetFile), os.FileMode(int(0777))); err != nil { 
-		log.Error("[SASS] Could not create output directory; ", err) 
+		logg.Err(err).Msg("creating output directory") 
 		return err
 	}
 
@@ -103,7 +104,7 @@ func (css CSS) Build() error {
 	// Output (target) file
 	targetFile, tferr := os.OpenFile(css.TargetFile, os.O_CREATE | os.O_RDWR | os.O_TRUNC, os.FileMode(int(0666)))
 	if tferr != nil { 
-		log.Error("[SASS] Could not open target file ^ :", tferr)
+		logg.Err(tferr).Msg("opening target file")
 		return tferr
 	}
 
@@ -115,7 +116,7 @@ func (css CSS) Build() error {
 	if logErr != nil { 
 		return logErr
 	}
-	log.Debugf("[SASS] Logging to '%s'", logFilepath)
+	logg.Debug().Msgf("[SASS] Logging to '%s'", logFilepath)
 
 	defer logFile.Close()
 
@@ -124,7 +125,7 @@ func (css CSS) Build() error {
 	// Each input file
 	for _, fpath := range files { 
 
-		log.Debugf("[SASS] Building '%s'", fpath)
+		logg.Debug().Msgf("Building '%s'", fpath)
 
 		// The CSS parser we use in tests gets confused about comments
 		// targetFile.WriteString( fmt.Sprintf("\n/* --- %s --- */\n\n", fpath) )
@@ -135,9 +136,10 @@ func (css CSS) Build() error {
 
 
 		if outErr != nil || errErr != nil { 
-			log.Error("-> Error initializing pipes")
-			log.Error("   stdOut: ", outErr)
-			log.Error("   stdErr: ", errErr) 
+			elog := logg.Error()
+			elog.Msg("-> Error initializing pipes")
+			elog.Msgf("   stdOut: %s", outErr)
+			elog.Msgf("   stdErr: %s", errErr) 
 			
 			if outErr != nil { 
 				return outErr
@@ -152,9 +154,10 @@ func (css CSS) Build() error {
 		_, errErr = io.Copy(logFile, stderr)
 
 		if outErr != nil || errErr != nil { 
-			log.Error("-> Error piping output")
-			log.Error("   stdOut: ", outErr)
-			log.Error("   stdErr: ", errErr) 
+			elog := logg.Error()
+			elog.Msg("-> Error piping output")
+			elog.Msgf("   stdOut: %s", outErr)
+			elog.Msgf("   stdErr: %s", errErr) 
 			
 			if outErr != nil { 
 				return outErr

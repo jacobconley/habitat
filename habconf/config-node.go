@@ -6,12 +6,12 @@ import (
 	"os/exec"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 // Node executables - except we presume yarn :)
 func (c Config) loadNode(dir string) error { 
-	log.Debug("Looking for Node executables (via Yarn)...")
+	log.Debug().Msg("Looking for Node executables (via Yarn)...")
 
 	cmd := exec.Command("yarn", "bin", "--silent")
 	stdout, err := cmd.Output()
@@ -21,7 +21,7 @@ func (c Config) loadNode(dir string) error {
 			return errors.New("Could not find Yarn! Is it installed?")
 		}
 
-		log.Error("Could not run Yarn", err)
+		log.Err(err).Msg("Could not run Yarn")
 		return err 
 	}
 
@@ -43,19 +43,18 @@ func (c Config) loadNode(dir string) error {
 		res := strings.TrimSpace((string(stdout)))
 
 		if err != nil { 
-			log.Errorf("Could not find Yarn executable `%s`", module) 
-			log.Error(err) 
+			log.Err(err).Msgf("Could not find Yarn executable `%s`", module) 
 			binErr = err
 			return 
 		}
 
 		if _, err = os.Stat(res); err != nil { 
-			log.Errorf("Could not find Yarn executable `%s` at expected path `%s`", module, res)
+			log.Err(err).Msgf("Could not find Yarn executable `%s` at expected path `%s`", module, res)
 			binErr = err 
 			return 
 		}
 
-		log.Debugf("-> Found %s: %s", module, res) 
+		log.Debug().Msgf("-> Found %s: %s", module, res) 
 		*into = res
 	}
 

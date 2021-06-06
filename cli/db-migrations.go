@@ -6,7 +6,7 @@ import (
 
 	"github.com/gobuffalo/pop/v5"
 	"github.com/jacobconley/habitat/habconf"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -48,7 +48,7 @@ var migrateCmd = &cobra.Command{
 
 		conn, err := conf.NewConnection()
 		if err != nil { 
-			log.Error("Could not establish connection: ", err)
+			log.Err(err).Msg("Could not establish connection")
 			return err
 		}
 

@@ -1,7 +1,7 @@
 package auxiliary
 
 import (
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 //Pipeline manages the processing of project files as defined by the config
@@ -37,16 +37,16 @@ type Loader interface {
 
 func BuildAll() error { 
 
-	log.Debug("Building all auxiliary...")
+	log.Debug().Msg("Building all auxiliary...")
 	
 	if err, _ := BuildCSS(); err != nil { 
-		log.Error("SASS build failed")
+		log.Error().Msg("SASS build failed")
 		return err 
 	}
 
 	
 	if err := BuildWebpack(); err != nil {
-		log.Error("Webpack build failed")
+		log.Error().Msg("Webpack build failed")
 		return err
 	}
 

@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/jacobconley/habitat/server"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func main() { 
-	log.Info("Starting test fixture server")
+	log.Info().Msg("Starting test fixture server")
 
 	router := server.Router()
 	http.ListenAndServe(":3000", router)

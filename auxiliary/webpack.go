@@ -6,7 +6,7 @@ import (
 
 	"github.com/jacobconley/habitat/habconf"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func BuildWebpack() error {
@@ -19,7 +19,7 @@ func BuildWebpack() error {
 	if logErr != nil { 
 		return logErr 
 	}
-	log.Debugf("[WBPK] Logging to %s", logFilepath)
+	log.Debug().Msgf("[WBPK] Logging to %s", logFilepath)
 
 	defer logFile.Close()
 
@@ -30,13 +30,13 @@ func BuildWebpack() error {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil { 
-		log.Error("[WBPK] Error executing build: ", err)
+		log.Err(err).Msg("[WBPK] Error executing build")
 		return err 
 	}
 
 	_, err = logFile.Write(output)
 	if err != nil { 
-		log.Warn("[WBPK] Could not write to log file: ", err)
+		log.Warn().Err(err).Msg("[WBPK] Could not write to log file")
 	}
 
 	return nil

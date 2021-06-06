@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 
@@ -22,20 +22,20 @@ func HandleAsset(w http.ResponseWriter, r *http.Request) {
 	path := "assets/" + vars["path"]
 	hash := vars["hash"]
 
-	log.Infof("Serving `%s` @ %s", path, hash)
 
+	logg := log.With().Str("path", path).Str("hash", hash).Logger()
 
 
 	file, err := os.Open(path);
 	if err != nil { 
-		log.Info("Completed [Not found]")
+		logg.Info().Msg("Completed [Not found]")
 		http.Error(w, "Asset not found", http.StatusNotFound)
 		return 
 	}
 
 	defer func() { 
 		if err = file.Close(); err != nil { 
-			log.Error("Could not close file", err)
+			logg.Warn().Err(err).Msg("Could not close file")
 		}
 	}() 
 
@@ -44,7 +44,7 @@ func HandleAsset(w http.ResponseWriter, r *http.Request) {
 
 	checkFingerprint := func(expected string) bool {
 		if(hash != expected) { 
-			log.Info("Completed [Gone]")
+			logg.Info().Msg("Completed [Gone]")
 			http.Error(w, "The fingerprint in this link no longer matches the requested file; it must have changed.  Try reloading the page that sent you here?", http.StatusGone)
 			return false 
 		}
@@ -57,7 +57,7 @@ func HandleAsset(w http.ResponseWriter, r *http.Request) {
 	// If there's a cached digest, we save ourself
 	cachedDigest, hasCachedDigest := fileHashes[path] 
 	if hasCachedDigest { 
-		log.Debug("Using cached digest")
+		logg.Debug().Msg("Using cached digest")
 		if !checkFingerprint(cachedDigest) { return } 
 	}
 	// Now hasCachedDigest implies a valid cache 
@@ -76,7 +76,7 @@ func HandleAsset(w http.ResponseWriter, r *http.Request) {
 
 		if n == 0 { break }
 		if err != nil { 
-			log.Error("Error reading buffer", err) 
+			logg.Err(err).Msg("reading buffer") 
 			return 
 		}
 
@@ -96,17 +96,17 @@ func HandleAsset(w http.ResponseWriter, r *http.Request) {
 	if hasCachedDigest { 
 		// We've already verified the digest
 		// And served the file, b/c of the logic above 
-		log.Info("Completed [OK] (HashCache)")
+		logg.Info().Msg("Completed [OK] (HashCache)")
 		return 
 	}
 
 	digest := fmt.Sprintf("%x", hasher.Sum(nil) )
 	// [OPTIMIZATION] Better hash generation  ^ - https://stackoverflow.com/a/66116854 - and we should probably be storing them this way too  
 
-	log.Debug("Caching digest: ", digest) 
+	logg.Debug().Msgf("Caching digest: %s", digest) 
 	fileHashes[path] = digest  
 	if !checkFingerprint( digest ) { return } 
 
 	w.Write(bobj.Bytes())
-	log.Info("Completed [OK] (Fingerprinted)")
+	logg.Info().Msg("Completed [OK] (Fingerprinted)")
 }

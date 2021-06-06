@@ -17,7 +17,7 @@ RUN apt-get -y install postgresql-10
 
 # let us log in locally w/ password
 WORKDIR /etc/postgresql/10/main 
-RUN cat  'local all all trust' > pg_hba.conf 
+RUN echo 'local all all trust' > pg_hba.conf 
 WORKDIR ${APPROOT}
 
 # create the user and db 
@@ -43,7 +43,7 @@ RUN go mod download
 # ======================
 
 # The beast itself
-RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 
 # Please, save me from this package manager 
