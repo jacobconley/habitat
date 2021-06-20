@@ -1,4 +1,4 @@
-package habitat
+package main
 
 import "github.com/jacobconley/habitat/cli"
 
