@@ -1,9 +1,0 @@
-#!/bin/bash
-set -euo pipefail 
-set +H
-
-service postgresql start
-createdb habitat_test
-psql <<SQL
-CREATE ROLE habitat WITH LOGIN SUPERUSER PASSWORD 'pazzwerd' 
-SQL

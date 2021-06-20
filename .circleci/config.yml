@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   test-end-to-end:
     docker:
-      - image: jacobconley/habitat:buster-base@sha256:e88f104cad57728e78db3e3166dc5f63023829a106221531ab3d02ae34081250
+      - image: jacobconley/habitat:buster-base@sha256:2aae479a31daaa416d682a886000a82a3f11651b78a4b7842fa200d6f30b784b
 
     working_directory: /go/src/github.com/jacobconley/habitat/
     steps:
@@ -13,20 +13,10 @@ jobs:
       - checkout
 
       - run: 
-          name: Start PostgreSQL
-          command: service postgresql start
-
-      - run: 
           name: Set up test fixtures
           command: |
             cd test-fixtures/userland
             yarn install
-      
-      - run:
-          name: Run CLI setup
-          command: |
-            cd test-fixtures/userland
-            go run ../../habitat.go db migrate
 
       - run: build/test-e2e
 

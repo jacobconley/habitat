@@ -37,7 +37,6 @@ type Config struct {
 
 type tomlRoot struct { 
 
-	Database 		tomlDB // `json:"database"`
 
 }
 
@@ -114,11 +113,6 @@ func LoadConfig() (*Config, error) {
 		toml: 			tomlVal,
 	}
 
-	if err := config.processDB(); err != nil { 
-		log.Error().Msg("Could not process DB config")
-		return nil, err 
-	}
-
 
 	if err := config.loadNode(projectRoot); err != nil { 
 		return nil, err 
@@ -176,18 +170,6 @@ func (c Config) GetDirCache() string {
 // GetDirOutput --
 func (c Config) GetDirOutput() string { 
 	return c.getProjectDir( HabitatDir, "tmp", "output")
-}
-
-
-func (c Config) GetDirDB() string { 
-	return c.getProjectDir( "db" )
-}
-func (c Config) GetDirMigrations() string { 
-	return c.getProjectDir( "db", "migrations" )
-}
-
-func (c Config) GetDirModels() string { 
-	return c.getProjectDir( "db", "models" )
 }
 
 

@@ -22,4 +22,3 @@ The bash script `build/test-e2e` runs all end-to-end tests; it's the entry point
 
 ### Test environment dependencies
  - **Node + yarn**, and the package dependencies (just run `yarn install` in `test-fixtures/userland`)
- - A running **PostgreSQL** instance, with the appropriate user as is configured in `test-fixtures/userland/habitat.toml`

@@ -8,27 +8,6 @@ WORKDIR ${APPROOT}
 
 
 
-# -- Postgresql --
-# I'm aware that it's pretty funny and stupid to have this in this same docker image, but for now end-to-end tests will be done in here
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN apt-get update
-RUN apt-get -y install postgresql-10
-
-# let us log in locally w/ password
-WORKDIR /etc/postgresql/10/main 
-RUN echo 'local all all trust' > pg_hba.conf 
-WORKDIR ${APPROOT}
-
-# create the user and db 
-COPY build/db-setup ./db-setup
-USER postgres
-RUN bash db-setup 
-USER root
-RUN rm db-setup 
-
-
-
 # -- Golang dependencies -- 
 COPY go.mod go.sum ./ 
 RUN go mod download
