@@ -31,11 +31,15 @@ type Config struct {
 	binWebpack 		string 
 
 	toml			tomlRoot
+
+	RenderMethodNotAllowed bool
 }
 
 
 
 type tomlRoot struct { 
+
+	renderMethodNotAllowed bool
 
 
 }
@@ -103,6 +107,11 @@ func LoadConfig() (*Config, error) {
 	}
 	
 
+	// [ISSUE #31] There should be an actual unmarshalling func to replace these default values
+	// https://github.com/jacobconley/habitat/issues/31
+	tomlVal.renderMethodNotAllowed = true 
+
+
 
 	config = &Config{
 		Env: 			env,
@@ -111,6 +120,8 @@ func LoadConfig() (*Config, error) {
 		ProjectDirs: 	[]string { "src/" },
 
 		toml: 			tomlVal,
+
+		RenderMethodNotAllowed: tomlVal.renderMethodNotAllowed,
 	}
 
 

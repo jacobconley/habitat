@@ -54,14 +54,7 @@ func ReadAsset(t *testing.T, asset string) ([]byte, string) {
 
 var test = baloo.New(":3000")
 
-func Test404(t *testing.T) { 
-
-	test.Get("/thang-that-dont-exist").
-		Expect(t). 
-		Status(404). 
-		Done()
-
-
+func TestAsset404(t *testing.T) { 
 	test.Get("/!/assets/asset-that-dont-exist").
 		Expect(t). 
 		Status(404). 
@@ -69,7 +62,7 @@ func Test404(t *testing.T) {
 }
 
 
-func TestValidAsset(t *testing.T) { 
+func TestAssetValid(t *testing.T) { 
 	asset := "test.txt"
 	bytes, digest := ReadAsset(t, asset) 
 
