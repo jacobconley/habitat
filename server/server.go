@@ -6,43 +6,56 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Router routes and serves all HTTP requests for Habitat applications.
+// Server routes and serves all HTTP requests for Habitat applications.
 // Where possible, its methods mimic those of Buffalo's App, but their arguments reflect the underlying parameters to Mux.
 
-type Router struct { 
+type Server struct { 
 	Mux * mux.Router
+
+	ErrorHandlers ErrorHandlers
 }
 
 // ServeHTTP forwards to Mux.ServeHTTP
-func (r Router) ServeHTTP(w http.ResponseWriter, req *http.Request) { 
+func (r * Server) ServeHTTP(w http.ResponseWriter, req *http.Request) { 
 	r.Mux.ServeHTTP(w, req)
 }
 
 
-type Matcher struct { 
-	Router 
-	path string // to HandleFunc
-}
-
-
-func NewRouter() *Router { 
+func NewServer() *Server { 
 	mux := mux.NewRouter()
 
 	mux.HandleFunc("/!/assets/{path:[^:]+}:{hash:[a-fA-F0-9]+}", HandleAsset)
 
-	return &Router{ Mux: mux }
+	return &Server{ Mux: mux }
 }
 
 
 
-func (r Router) Match(path string) Matcher { 
+func (r * Server) NewContext(rw http.ResponseWriter, req * http.Request) Context { 
+	return Context{
+		Request: req, 
+		ResponseWriter: rw,
+	}
+}
+
+
+
+
+type Matcher struct { 
+	server * Server 
+	path string // to HandleFunc
+}
+
+
+
+func (r * Server) Match(path string) Matcher { 
 	return Matcher { 
-		Router: r,
+		server: r,
 		path: path,
 	}
 }
 
-// TODO: MatchPrefix (Router -> Matcher)
+// TODO: MatchPrefix (Server -> Matcher)
 
 
 func (m Matcher) GET() Renderer { 
@@ -61,8 +74,8 @@ func (m Matcher) GET() Renderer {
 // // ConfigureRoutes weird snippet if we decide to do a block initialization
 // // but this should probably be up at the app level?  
 // // On the other hand that's more restrictive than I'd like to be for this project
-// func ConfigureRoutes( block func(r * Router) ) * Router { 
-// 	r := NewRouter()
+// func ConfigureRoutes( block func(r * Server) ) * Server { 
+// 	r := NewServer()
 // 	block(r) 
 // 	return r
 // 	// Should it return that?  mayb should just be a smaller interface without the route functions supposed to be called in the block

@@ -6,4 +6,5 @@ import (
 
 type Context struct {
 	Request * http.Request
+	ResponseWriter http.ResponseWriter
 }

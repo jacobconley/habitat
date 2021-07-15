@@ -10,10 +10,10 @@ import (
 func main() { 
 	log.Info().Msg("Starting test fixture server")
 
-	router := server.NewRouter()
+	router := server.NewServer()
 
 	router.Match("/test-get").
-		GET().Raw(func(hab *server.Context, r *http.Request) (result string, err error) {
+		GET().Raw(func(hab server.Context) (result string, err error) {
 			return "succ", nil
 		})
 

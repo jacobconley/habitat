@@ -39,7 +39,7 @@ func (r Renderer) before(rw http.ResponseWriter, req * http.Request) {
 
 	if !(r.allowsMethod( req.Method )) { 
 
-		if habconf.GetConfig().RenderMethodNotAllowed { 
+		if habconf.Errors.RenderHTTPErrors.MethodNotAllowed { 
 			rw.WriteHeader( http.StatusMethodNotAllowed )
 			//TODO: How to render this https://github.com/jacobconley/habitat/issues/33
 		}
@@ -47,20 +47,33 @@ func (r Renderer) before(rw http.ResponseWriter, req * http.Request) {
 }
 
 
-func (r Renderer) Raw( handler func(* Context, * http.Request) (result string, err error) ) { 
 
-	r.Mux.HandleFunc( r.path, func(rw http.ResponseWriter, req *http.Request) {
+// Render type definitions
+// https://github.com/jacobconley/habitat/issues/35
+
+type renderType int 
+const ( 
+	renderRaw renderType = iota
+)
+
+
+
+
+func (r Renderer) Raw( handler func(Context) (result string, err error) ) { 
+
+	r.server.Mux.HandleFunc( r.path, func(rw http.ResponseWriter, req *http.Request) {
 
 		r.before(rw, req) 
 
-		//TODO: Error handling https://github.com/jacobconley/habitat/issues/33
-		// Above and below 
-
 		//TODO: Provide Habitat Context to the below
+		habctx := r.server.NewContext(rw, req)
 
-		res, err := handler(nil, req) 
+		res, err := handler(habctx) 
 
 		if err != nil { 
+
+			r.server.ErrorHandlers.auto(r.server, renderRaw, habctx, err)
+
 			rw.WriteHeader(500) 
 			return
 		}
@@ -70,9 +83,9 @@ func (r Renderer) Raw( handler func(* Context, * http.Request) (result string, e
 	}) 
 }
 
+
 // func (r Renderer) JSON( handler func(hab * Context) (result interface{}, err error) ) { 
 // }
 
 // func (r Renderer) WebTemplate( template string, handler func(hab * Context) (vars interface{}, err error) ) { 
 // }
-//TODO: Templater type that initializes with a layout or whatever else, then can be passeed here

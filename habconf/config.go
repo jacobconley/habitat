@@ -19,6 +19,29 @@ const ConfigFile = "habitat.toml"
 const HabitatDir = ".habitat"
 
 
+type RenderHTTPErrors struct { 
+	MethodNotAllowed bool 
+}
+
+var Errors = struct { 
+	RenderHTTPErrors RenderHTTPErrors
+
+	FallbackToOtherTypes bool 
+	FallbackToHabitatTemplate bool 
+
+} { 
+	
+	RenderHTTPErrors: RenderHTTPErrors { 
+		MethodNotAllowed: true,
+	},
+
+	FallbackToOtherTypes: true,
+	FallbackToHabitatTemplate: true,
+
+}
+
+
+
 //Config is the goddamned config struct
 type Config struct { 
 	Env				string
@@ -31,16 +54,9 @@ type Config struct {
 	binWebpack 		string 
 
 	toml			tomlRoot
-
-	RenderMethodNotAllowed bool
 }
 
-
-
 type tomlRoot struct { 
-
-	renderMethodNotAllowed bool
-
 
 }
 
@@ -105,11 +121,6 @@ func LoadConfig() (*Config, error) {
 		log.Err(err).Msgf("Could not read config file '%s'", ConfigFile)
 		return nil, err
 	}
-	
-
-	// [ISSUE #31] There should be an actual unmarshalling func to replace these default values
-	// https://github.com/jacobconley/habitat/issues/31
-	tomlVal.renderMethodNotAllowed = true 
 
 
 
@@ -120,8 +131,6 @@ func LoadConfig() (*Config, error) {
 		ProjectDirs: 	[]string { "src/" },
 
 		toml: 			tomlVal,
-
-		RenderMethodNotAllowed: tomlVal.renderMethodNotAllowed,
 	}
 
 
