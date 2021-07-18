@@ -12,7 +12,7 @@ import (
 type Server struct { 
 	Mux * mux.Router
 
-	ErrorHandlers ErrorHandlers
+	ErrorHandlers 		ErrorHandlers
 }
 
 // ServeHTTP forwards to Mux.ServeHTTP
@@ -26,13 +26,25 @@ func NewServer() *Server {
 
 	mux.HandleFunc("/!/assets/{path:[^:]+}:{hash:[a-fA-F0-9]+}", HandleAsset)
 
-	return &Server{ Mux: mux }
+	srv :=  &Server{ Mux: mux }
+
+	//TODO:  [ISSUE #35] Change these to HTML when we add it 
+	mux.NotFoundHandler = http.HandlerFunc(func(rw http.ResponseWriter, req * http.Request) { 
+		ctx := srv.NewContext(rw, req) 
+		srv.handleError(errNotFound, renderRaw, ctx)
+	})
+	mux.MethodNotAllowedHandler = http.HandlerFunc(func(rw http.ResponseWriter, req * http.Request) { 
+		ctx := srv.NewContext(rw, req)
+		srv.handleError(errMethodNotAllowed, renderRaw, ctx)
+	})
+
+	return srv
 }
 
 
 
-func (r * Server) NewContext(rw http.ResponseWriter, req * http.Request) Context { 
-	return Context{
+func (r * Server) NewContext(rw http.ResponseWriter, req * http.Request) * Context { 
+	return &Context{
 		Request: req, 
 		ResponseWriter: rw,
 	}

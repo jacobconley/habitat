@@ -18,6 +18,7 @@ jobs:
             cd test-fixtures/userland
             yarn install
 
+      - run: build/test-unit
       - run: build/test-e2e
 
 

@@ -4,3 +4,5 @@ set +H
 
 GOPATH="${GOPATH:-$HOME/go}"
 cd $GOPATH/src/github.com/jacobconley/habitat
+
+go test -v ./server 

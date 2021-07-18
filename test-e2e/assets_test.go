@@ -52,10 +52,10 @@ func ReadAsset(t *testing.T, asset string) ([]byte, string) {
 
 
 
-var test = baloo.New(":3000")
+var client = baloo.New(":3000")
 
 func TestAsset404(t *testing.T) { 
-	test.Get("/!/assets/asset-that-dont-exist").
+	client.Get("/!/assets/asset-that-dont-exist").
 		Expect(t). 
 		Status(404). 
 		Done()
@@ -69,7 +69,7 @@ func TestAssetValid(t *testing.T) {
 	url := fmt.Sprintf("/!/assets/%s:%s", asset, digest)
 	t.Log(url)
 
-	test.Get(url).
+	client.Get(url).
 		Expect(t). 
 		Status(200). 
 		BodyEquals( string(bytes) ).

@@ -1,9 +1,8 @@
 package server
 
 import (
+	"errors"
 	"net/http"
-
-	"github.com/jacobconley/habitat/habconf"
 )
 
 
@@ -34,16 +33,17 @@ func (r Renderer) allowsMethod(method string) bool {
 }
 
 
+var errMethodNotAllowed = errors.New("HTTP Method not allowed")
+var errNotFound = errors.New("HTTP Not found")
 
-func (r Renderer) before(rw http.ResponseWriter, req * http.Request) { 
+
+func (r Renderer) before(rw http.ResponseWriter, req * http.Request) error { 
 
 	if !(r.allowsMethod( req.Method )) { 
-
-		if habconf.Errors.RenderHTTPErrors.MethodNotAllowed { 
-			rw.WriteHeader( http.StatusMethodNotAllowed )
-			//TODO: How to render this https://github.com/jacobconley/habitat/issues/33
-		}
+		return errMethodNotAllowed
 	}
+
+	return nil 
 }
 
 
@@ -59,26 +59,24 @@ const (
 
 
 
-func (r Renderer) Raw( handler func(Context) (result string, err error) ) { 
+func (r Renderer) Raw( handler func(* Context) (result string, err error) ) { 
 
 	r.server.Mux.HandleFunc( r.path, func(rw http.ResponseWriter, req *http.Request) {
-
-		r.before(rw, req) 
-
-		//TODO: Provide Habitat Context to the below
+ 
 		habctx := r.server.NewContext(rw, req)
+		var res string
 
-		res, err := handler(habctx) 
+		err := r.before(rw, req)
+		if err == nil { 
+			res, err = handler(habctx) 
+		}
 
 		if err != nil { 
-
-			r.server.ErrorHandlers.auto(r.server, renderRaw, habctx, err)
-
-			rw.WriteHeader(500) 
+			r.server.handleError(err, renderRaw, habctx) 
 			return
 		}
 
-		rw.Write( []byte(res) )
+		habctx.writeOut( []byte(res) )
 
 	}) 
 }
