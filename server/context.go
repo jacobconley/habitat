@@ -6,8 +6,8 @@ import (
 
 type Context struct {
 	Request * http.Request
-	ResponseWriter http.ResponseWriter
 
+	Response http.ResponseWriter
 
 	// Status is the HTTP status
 	// The header can only be sent once, but this variable can be updated throughout the life cycle 
@@ -15,9 +15,17 @@ type Context struct {
 	Status int
 }
 
-func (hab Context) writeOut(out []byte) { 
+
+func (hab Context) beforeWrite() { 
 	if hab.Status != 0 { 
-		hab.ResponseWriter.WriteHeader( hab.Status ) 
+		hab.Response.WriteHeader( hab.Status ) 
 	}
-	hab.ResponseWriter.Write(out)
 }
+
+func (hab Context) writeOut(out []byte) error { 
+	hab.beforeWrite()
+	_, err := hab.Response.Write(out)
+	return err 
+}
+
+

@@ -30,7 +30,7 @@ func TestCustom404(t *testing.T) {
 	srv := NewServer()
 	strang := "Caint find it my guy"
 
-	srv.ErrorHandlers.Raw =  func(hab * Context, err error) ( string, bool, error ){ 
+	srv.ErrorHandlers.String =  func(hab * Context, err error) ( string, bool, error ){ 
 		return strang, true, nil
 	}
 

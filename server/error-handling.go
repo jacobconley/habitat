@@ -11,7 +11,7 @@ import (
 
 type ErrorHandlers struct { 
 
-	Raw func(* Context, error) (string, bool, error)
+	String func(* Context, error) (string, bool, error)
 	//TODO: Other renderers https://github.com/jacobconley/habitat/issues/35
 
 }
@@ -73,23 +73,24 @@ func errorToStatusCode(err error) int {
 
 func (srv Server) handleError(err error, rtype renderType, context * Context) { 
 
-	log.Debug().Msg("invoking ErrorHandlers")
+	log.Err(err).Msg("")
+	log.Debug().Msg("handleError invoked")
 
 	handlers := srv.ErrorHandlers
-	rw := context.ResponseWriter
+	rw := context.Response
 
 	context.Status = errorToStatusCode(err)
 
 	// As we add render types, expand this logic, check if the config allows fallbacks, test alladat 
-	if handlers.Raw != nil { 
-		output, handled, e2 := handlers.Raw(context, err)
+	if handlers.String != nil { 
+		output, handled, e2 := handlers.String(context, err)
 
 		if e2 != nil { 
-			log.Err(e2).Msg("occured while rendering ErrorHandlers.Raw")
+			log.Err(e2).Msg("occured while rendering ErrorHandlers.String")
 
 			rw.WriteHeader(500)
 			if habconf.Errors.FallbackToHabitatTemplate { 
-				out, _, _ :=defaultErrorHandlers.Raw(context, err) 
+				out, _, _ :=defaultErrorHandlers.String(context, err) 
 				context.writeOut( []byte(out) )
 			}
 			return 
@@ -109,7 +110,7 @@ func (srv Server) handleError(err error, rtype renderType, context * Context) {
 
 		//TODO: [ISSUE #35] change to html when its added 
 		log.Debug().Msg("falling back to default")
-		out, _, _ := defaultErrorHandlers.Raw(context, err)
+		out, _, _ := defaultErrorHandlers.String(context, err)
 		context.writeOut( []byte(out) )
 		return 
 
@@ -129,7 +130,7 @@ var defaultErrorStrings = struct{
 
 
 var defaultErrorHandlers = ErrorHandlers { 
-	Raw: func(c * Context, e error) (string, bool, error) {
+	String: func(c * Context, e error) (string, bool, error) {
 		if e == errNotFound { 
 			return defaultErrorStrings.notFound, true, nil 
 		}

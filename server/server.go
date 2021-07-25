@@ -31,11 +31,11 @@ func NewServer() *Server {
 	//TODO:  [ISSUE #35] Change these to HTML when we add it 
 	mux.NotFoundHandler = http.HandlerFunc(func(rw http.ResponseWriter, req * http.Request) { 
 		ctx := srv.NewContext(rw, req) 
-		srv.handleError(errNotFound, renderRaw, ctx)
+		srv.handleError(errNotFound, renderString, ctx)
 	})
 	mux.MethodNotAllowedHandler = http.HandlerFunc(func(rw http.ResponseWriter, req * http.Request) { 
 		ctx := srv.NewContext(rw, req)
-		srv.handleError(errMethodNotAllowed, renderRaw, ctx)
+		srv.handleError(errMethodNotAllowed, renderString, ctx)
 	})
 
 	return srv
@@ -46,7 +46,7 @@ func NewServer() *Server {
 func (r * Server) NewContext(rw http.ResponseWriter, req * http.Request) * Context { 
 	return &Context{
 		Request: req, 
-		ResponseWriter: rw,
+		Response: rw,
 	}
 }
 
