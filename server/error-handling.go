@@ -65,6 +65,20 @@ func errorToStatusCode(err error) int {
 		return http.StatusNotFound
 	}
 
+	if err == ErrBodyTooLarge { 
+		return http.StatusRequestEntityTooLarge
+	}
+	if err == ErrBadContentType || err == ErrExpectedForm { 
+		return http.StatusUnsupportedMediaType
+	}
+	
+	if isErrUnprocessableEntity(err) { 
+		return http.StatusUnprocessableEntity
+	}
+	if isErrBadRequest(err) { 
+		return http.StatusBadRequest
+	}
+
 	return http.StatusInternalServerError
 
 }

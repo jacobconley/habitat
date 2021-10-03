@@ -29,7 +29,7 @@ func (r Renderer) String( action HandlerString ) {
 	r.server.Mux.HandleFunc( r.path, func(rw http.ResponseWriter, req *http.Request) {
 		rtype := renderString
  
-		habctx := r.server.NewContext(rw, req)
+		habctx := NewContext(rw, req)
 		var res string
 
 		err := r.beforeRender(rw, req)
@@ -58,7 +58,7 @@ func (r Renderer) HTMLString( action HandlerHTMLString ) {
 	r.server.Mux.HandleFunc( r.path, func(rw http.ResponseWriter, req *http.Request) { 
 		rtype := renderHTMLString
 
-		habctx := r.server.NewContext(rw, req) 
+		habctx := NewContext(rw, req) 
 		html := new(HTMLRenderer)
 
 		var body template.HTML

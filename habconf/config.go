@@ -20,7 +20,15 @@ const HabitatDir = ".habitat"
 
 
 type RenderHTTPErrors struct { 
-	MethodNotAllowed bool 
+
+	// MethodNotAllowed will cause Habitat to render HTTP 405 where applicable - i.e. for unimplemented HTTP methods where an implemented method is configured on the same path.
+	// If set to `false`, Habitat will render HTTP 404 instead. 
+	MethodNotAllowed 	bool
+	
+	// UnprocessableEntity will cause Habitat to render HTTP 422 for requests that are syntactically correct but malformed due to missing or mistyped parameters. 
+	// If set to `false`, Habitat will render HTTP 400 instead. 
+	// HTTP 422 was added as a part of WebDAV in RFC 4918 (2007) for this situation, and I like it, but later RFC 7231 (2014) clarified that HTTP 400 is acceptable for this situation too.  See this post for more: https://softwareengineering.stackexchange.com/a/342896
+	UnprocessableEntity	bool
 }
 
 var Errors = struct { 
@@ -32,13 +40,19 @@ var Errors = struct {
 } { 
 	
 	RenderHTTPErrors: RenderHTTPErrors { 
-		MethodNotAllowed: true,
+		MethodNotAllowed: 		true,
+		UnprocessableEntity:	true,
 	},
 
 	FallbackToOtherTypes: true,
 	FallbackToHabitatTemplate: true,
 
 }
+
+
+var MaxFormSize = int64(1<<63 - 1)
+
+
 
 
 

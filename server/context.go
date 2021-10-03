@@ -16,6 +16,27 @@ type Context struct {
 }
 
 
+func NewContext(resp http.ResponseWriter, req * http.Request) * Context { 
+
+	return &Context{
+		Request: req, 
+		Response: resp,
+	}
+
+}
+
+
+
+// 
+// Data processing
+// 
+
+
+
+// 
+// Utility methods
+//
+
 func (hab Context) beforeWrite() { 
 	if hab.Status != 0 { 
 		hab.Response.WriteHeader( hab.Status ) 
