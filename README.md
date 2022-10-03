@@ -4,7 +4,7 @@
 Habitat
 ======
 
-Habitat is a declarative, open-ended, holistic web framework written primarily in the Go language.  It wraps the [Gorilla](https://github.com/gorilla) toolkit and provides support functionality to server-side Go code, 
+Habitat is an imperative, open-ended, holistic web framework written primarily in the Go language.  It wraps the [Gorilla](https://github.com/gorilla) toolkit and provides support functionality to server-side Go code, 
     and also integrates with the Node.js ecosystem to facilitate seamless development and deployment of client-side code. 
 
 More to come!
@@ -15,8 +15,8 @@ Philosophy
 
 Habitat stands in contrast to Rails and other Rails-inspired frameworks in Go.  I love Rails as much as the next guy, but Habitat exists to serve a slightly different purpose, guided by the below principles: 
 
- - **Declarative**: While the [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm can be convenient, it comes with trade-offs in that it begets untraceable code and can sometimes be restrictive.  Habitat does exactly what you tell it to do, only when you tell it to do so.  And unlike some other frameworks, which are completely encapsulated behind their server mechanism, Habitat leverages Go's powerful standard [`http`](https://pkg.go.dev/net/http) implementations to give the programmer complete control over the entire server lifecycle, not just the lifecycle of a single request boxed in to that request's context.
- - **Open-ended**: Habitat aims to be reasonably unopinionated.  I'm not a fan of Rails-style separation-of-concerns which splits relevant code across many different directories.  While I think the model-view-controller paradigm is good as a guiding principle in general, I built Habitat to be free of restrictive organizational structures that might not make sense in every scenario.  I believe that one of Go's biggest strengths as a language is in the extensibility of its ecosystem, and that the flexibility it provides while still being robust makes it well worth the trade-off of requiring more explicit declarative configuration. 
+ - **Imperative**: While the [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm can be convenient, it comes with trade-offs in that it begets untraceable code and can sometimes be restrictive.  Habitat does exactly what you tell it to do, only when you tell it to do so.  And unlike some other frameworks, which are completely encapsulated behind their server mechanism, Habitat leverages Go's powerful standard [`http`](https://pkg.go.dev/net/http) implementations to give the programmer complete control over the entire server lifecycle, not just the lifecycle of a single request boxed in to that request's context.
+ - **Open-ended**: Habitat aims to be reasonably unopinionated.  I'm not a fan of Rails-style separation-of-concerns which splits relevant code across many different directories.  While I think the model-view-controller paradigm is good as a guiding principle in general, I built Habitat to be free of restrictive organizational structures that might not make sense in every scenario.  I believe that one of Go's biggest strengths as a language is in the extensibility of its ecosystem, and that the flexibility it provides while still being robust makes it well worth the trade-off of requiring more explicit imperative configuration. 
  - **Holistic**:  One thing that I think Rails does well is integrating with the Javascript ecosystem.  I have _very many_ criticisms of Javascript and the Node ecosystem that are common in the webdev community as a whole.  Nonetheless, it reigns as the dominant platform for front-end web development, at least for the time being.  Therefore, Habitat will support it and aim to provide a seamless, powerful, integrated development experience to whatever extent it does not conflict with the principles above.  With Habitat I aim to take this integration a step further than other server frameworks, leveraging modern client-side techniques and libraries to unify the front-end and back-end development experience and create a platform for the modern era. 
 
 
@@ -24,7 +24,7 @@ Features
 ----
 
  - Integrated with the [Gorilla](https://github.com/gorilla) toolkit, including its powerful routing and middleware configurations
- - Declarative HTML metadata and dependency configuration, with powerful layout and templating functionality
+ - Imperative HTML metadata and dependency configuration, with powerful layout and templating functionality
  - Auxiliary toolchains:  Automatic SCSS and Webpack builds 
  - Easy rendering for HTML, JSON, or raw text, with customizable error handling
  - Clean parameter handling, with a JSON-style unmarshalling function for URL parameters that also handles string parsing 
